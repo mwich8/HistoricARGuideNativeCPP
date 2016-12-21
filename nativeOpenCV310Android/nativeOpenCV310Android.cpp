@@ -4,7 +4,7 @@ Java Native Interface library
 #include "nativeOpenCV310Android.h"
 
 extern "C" {
-	JNIEXPORT void JNICALL Java_com_dumwi2_opencv31app_MainActivity_setupDetection(JNIEnv *env, jobject instance, jint width, jint height, jlong addrARImg) {
+	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_setupDetection(JNIEnv *env, jobject instance, jint width, jint height, jlong addrARImg) {
 		// Store images
 		arImage = *(Mat*)addrARImg;
 		
@@ -22,11 +22,11 @@ extern "C" {
 		updateSettings((int)width, (int)height);
 	}
 
-	JNIEXPORT void JNICALL Java_com_dumwi2_opencv31app_MainActivity_updateSettings(JNIEnv *env, jobject instance, jint width, jint height) {
+	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_updateSettings(JNIEnv *env, jobject instance, jint width, jint height) {
 		updateSettings((int)width, (int)height);
 	}
 
-	JNIEXPORT void JNICALL Java_com_dumwi2_opencv31app_MainActivity_setSwitchState(JNIEnv *env, jobject instance, jboolean switchState) {
+	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_setSwitchState(JNIEnv *env, jobject instance, jboolean switchState) {
 		if (switchState) {
 			archWidth = SIEGESTOR_WIDTH;
 			archHeight = SIEGESTOR_HEIGHT;
@@ -45,7 +45,7 @@ extern "C" {
 		resetOldMiddleArchProps();
 	}
 
-	JNIEXPORT void JNICALL Java_com_dumwi2_opencv31app_MainActivity_nativeOpticalDetectionDebug(JNIEnv *env, jobject instance, jlong addrRgba, jfloat fps) {
+	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_nativeOpticalDetectionDebug(JNIEnv *env, jobject instance, jlong addrRgba, jfloat fps) {
 		Mat& mRgb = *(Mat*)addrRgba;
 
 		Mat mGray;
@@ -64,7 +64,7 @@ extern "C" {
 		}
 	}
 
-	JNIEXPORT void JNICALL Java_com_dumwi2_opencv31app_MainActivity_nativeOpticalDetection(JNIEnv *env, jobject instance, jlong addrRgba, jfloat fps) {
+	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_nativeOpticalDetection(JNIEnv *env, jobject instance, jlong addrRgba, jfloat fps) {
 		Mat& mRgb = *(Mat*)addrRgba;
 
 		Mat mGray;
@@ -83,7 +83,7 @@ extern "C" {
 		}
 	}
 
-	JNIEXPORT void JNICALL Java_com_dumwi2_opencv31app_MainActivity_nativeSetTouchPos(JNIEnv *env, jobject instance, jint xCoord, jint yCoord) {
+	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_nativeSetTouchPos(JNIEnv *env, jobject instance, jint xCoord, jint yCoord) {
 		touchedPoint = Point((int)xCoord, (int)yCoord);
 	}
 } // END extern "C" (maybe combining both externs to one)

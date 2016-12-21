@@ -187,15 +187,15 @@ This means that function names are not the same in C++ as in plain C.
 To inhibit this name mangling, you have to declare functions as extern “C”
 */
 extern "C" {
-	JNIEXPORT void JNICALL Java_com_dumwi2_opencv31app_MainActivity_setupDetection(JNIEnv *env, jobject instance, jint width, jint height, jlong addrARImg);
+	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_setupDetection(JNIEnv *env, jobject instance, jint width, jint height, jlong addrARImg);
 
-	JNIEXPORT void JNICALL Java_com_dumwi2_opencv31app_MainActivity_updateSettings(JNIEnv *env, jobject instance, jint width, jint height);
+	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_updateSettings(JNIEnv *env, jobject instance, jint width, jint height);
 
-	JNIEXPORT void JNICALL Java_com_dumwi2_opencv31app_MainActivity_setSwitchState(JNIEnv *env, jobject instance, jboolean switchState);
+	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_setSwitchState(JNIEnv *env, jobject instance, jboolean switchState);
 
-	JNIEXPORT void JNICALL Java_com_dumwi2_opencv31app_MainActivity_nativeOpticalDetectionDebug(JNIEnv *env, jobject instance, jlong addrRgba, jfloat fps);
+	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_nativeOpticalDetectionDebug(JNIEnv *env, jobject instance, jlong addrRgba, jfloat fps);
 
-	JNIEXPORT void JNICALL Java_com_dumwi2_opencv31app_MainActivity_nativeOpticalDetection(JNIEnv *env, jobject instance, jlong addrRgba, jfloat fps);
+	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_nativeOpticalDetection(JNIEnv *env, jobject instance, jlong addrRgba, jfloat fps);
 
-	JNIEXPORT void JNICALL Java_com_dumwi2_opencv31app_MainActivity_nativeSetTouchPos(JNIEnv *env, jobject instance, jint xCoord, jint yCoord);
+	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_nativeSetTouchPos(JNIEnv *env, jobject instance, jint xCoord, jint yCoord);
 }// END extern "C"
