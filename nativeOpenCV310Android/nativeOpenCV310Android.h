@@ -2,15 +2,7 @@
 #include <string.h>
 #include <jni.h>
 #include "opencv2/core/core.hpp"
-#include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/features2d/features2d.hpp>
-#include <opencv2/video/tracking.hpp>
-#include <opencv2\xfeatures2d\nonfree.hpp>
-#include <opencv2\xfeatures2d\cuda.hpp>
-#include <opencv2\xfeatures2d.hpp>
-#include <opencv2\ximgproc.hpp>
-#include <opencv2\ximgproc\structured_edge_detection.hpp>
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,8 +11,6 @@
 
 using namespace std;
 using namespace cv;
-using namespace xfeatures2d;
-using namespace ximgproc;
 
 /// Type Defs
 // First int is ID, second int is counter and a contour

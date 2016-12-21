@@ -41,7 +41,7 @@
   <PropertyGroup Label="UserMacros">
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Tegra-Android'">
-    <OutDir>D:\Benutzer\Mati\AndStuProjs\OpenCV3.1Proj\OpenCV3.1App\app\src\main\jniLibs\armeabi-v7a</OutDir>
+    <OutDir>D:\Benutzer\Mati\AndStuProjs\HistoricARGuide\OpenCV3.1App\app\src\main\jniLibs\armeabi-v7a</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Tegra-Android'">
     <ClCompile>
@@ -50,7 +50,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>D:\Benutzer\Mati\AndroidDevTools\OpenCV-3.1.0-android-sdk\OpenCV-android-sdk\sdk\native\libs\armeabi-v7a</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_java3;opencv_xfeatures2d;opencv_ximgproc;opencv_core;opencv_imgproc;opencv_highgui;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_java3;opencv_core;opencv_imgproc;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Tegra-Android'">
