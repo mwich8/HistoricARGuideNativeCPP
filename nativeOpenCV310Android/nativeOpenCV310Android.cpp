@@ -268,7 +268,6 @@ void opticalDetectionDebug(Mat& mRgb, Mat& mGray) {
 	}
 
 	float missingRatio = 0.5f;
-	// int maxNumOfMisses = (int)floor((numConsideredFrames * missingRatio) + 0.5f);
 	int maxNumOfMisses = (int)floor((arImgFrames * missingRatio) + 0.5f);
 
 	if (!globalContoursMap.empty()) {
@@ -468,8 +467,7 @@ void mapARImageOnZenithOfMiddleArch(Mat mRgb, vector<Point> middleArch, float mi
 		old_boundingRec = boundingRec;
 		resizedARImage.copyTo(mRgb(boundingRec));
 		old_middle_arch = middleArch;
-		remainingARImgFrames = arImgFrames * minSecsToShowARImg;
-		remainingContourFrames = remainingARImgFrames;
+		remainingContourFrames = arImgFrames * minSecsToShowARImg;
 	}
 	else if (!resizedARImage.empty() && remainingContourFrames > 0) {
 		resizedARImage.copyTo(mRgb(old_boundingRec));

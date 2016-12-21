@@ -17,43 +17,19 @@ using namespace cv;
 typedef std::map<int, std::pair<vector<Point>, int> > ContoursMap;
 
 /// "Global" vars
-
-RNG rng(12345);
-
-int lastSecondTimeStamp = 0;
-
-int secondsSinceStartUp = 0;
-
-int outputTimeOutContours = 30;
-
-int currentFrame = 0;
-
-int numConsideredFrames = 7;	// Consider last x frames for calc new contours
-
-int numberOfCannysPerFrame = 3;
-
+// Variable to switch between buffers
 bool bufferSwitch = true;
-
+// Number of remaining frames a historic image will be displayed
 int remainingContourFrames = 0;
-
-int remainingARImgFrames = 0;
-
+// Minimum seconds the historic image will be displayed, if no other match was found
 int minSecsToShowARImg = 2;
-
+// Number of frames a new mapped historic image will be displayed
 int arImgFrames = 5;
-
+// Stores the current width of the passed frame
 int frameWidth;
-
+// Stores the current height of the passed frame
 int frameHeight;
-
-int watermarkWidth;
-
-int watermarkHeight;
-
-float globalWaterMarkSize;
-
-int globalWatermarkMode;
-
+// Indicates whether the UI switch is turned on or of, to distinct between "Siegestor" and "Feldherrnhalle"
 bool switchState = false;
 
 /// Define structure dimensions and pos of zenith
@@ -75,25 +51,37 @@ float archZenithPercPosX = FELDHERRNHALLE_ZENITH_PERC_POS_X;
 float archZenithPercPosY = FELDHERRNHALLE_ZENITH_PERC_POS_Y;
 bool archHasBackground = true;
 
+// Stores RGB frame before it will be processes
 Mat originalRGBImg;
+// Stores the passed historic image that will be used to create AR
 Mat arImage;
+// Stores the transformed historic image
 Mat resizedARImage;
+// The point which was touched at 
 Point touchedPoint;
 
+// Number of arches, that are considered for the average width calculation
 int number_of_arch_widths = arImgFrames * 2;
+// The last index, a width was pushed to
 int last_pushed_index = 0;
-
+// Stores the widths of the arches
 vector<int> last_arch_widths(number_of_arch_widths);
 
+// Stores the values of the matched 
 int old_middle_arch_width = 0;
 vector<Point> old_middle_arch;
 Rect old_boundingRec;
 
+// Store the previous found contours
 vector<vector<Point>> prevFoundArchContours;
+// Init the switchBuffer for binary images
 vector<vector<vector<Point>>> switchBuffer(2);
+// Store contours that can be compared against detected contours
 vector<vector<Point>> searchContours;
+// Global ContoursMap
 ContoursMap globalContoursMap;
 
+// Center of the frame
 Point center;
 
 // Define basic colors
@@ -118,15 +106,11 @@ void opticalDetectionDebug(Mat& mRgb, Mat& mGray);
 
 void opticalDetection(Mat& mRgb, Mat& mGray);
 
-bool similarWidth(vector<Point> contour1, vector<Point> contour2, float maxDeviation = 0.25f);
-
 Rect createRect(Point p1, Point p2, int expandVal = 0);
 
 Point getCenterOfContour(vector<Point> contour);
 
 float getLongestContourSide(vector<Point> contour);
-
-vector<Point> getMiddleArch(Mat mRgb, vector<vector<Point>> contours);
 
 void mapARImageOnMiddleArch(Mat mRgb, vector<vector<Point>> contours, float middleArchDiameter);
 
