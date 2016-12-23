@@ -55,6 +55,8 @@ float archZenithPercPosX = FELDHERRNHALLE_ZENITH_PERC_POS_X;
 float archZenithPercPosY = FELDHERRNHALLE_ZENITH_PERC_POS_Y;
 bool archHasBackground = true;
 
+// The entire RGB camera frame
+Mat cameraRgb;
 // Stores RGB frame before it will be processes
 Mat originalRGBImg;
 // Stores the passed historic image that will be used to create AR
@@ -124,7 +126,7 @@ Point getZenithOfContour(vector<Point> contour);
 
 vector<Point> getAtPointedArch(Mat mRgb, vector<vector<Point>> contours);
 
-bool contourIsArch(vector<Point> contour, bool drawPoints = false);
+bool contourIsArch(vector<Point> contour);
 
 bool pointsAreAtOuterPos(Point point1, Point point2, vector<Point> contour);
 
@@ -177,15 +179,9 @@ To inhibit this name mangling, you have to declare functions as extern “C”
 extern "C" {
 	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_setupDetection(JNIEnv *env, jobject instance, jint innerWidth, jint innerHeight, jint frameWidth, jint frameHeight, jlong addrARImg);
 
-	// TODO: Not needed anymore
-	// JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_updateSettings(JNIEnv *env, jobject instance, jint innerWidth, jint innerHeight);
-
 	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_setSwitchState(JNIEnv *env, jobject instance, jboolean switchState);
 
 	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_nativeOpticalDetectionDebug(JNIEnv *env, jobject instance, jlong innerRgba, jlong addrRgba, jfloat fps);
 
-	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_nativeOpticalDetection(JNIEnv *env, jobject instance, jlong addrRgba, jfloat fps);
-
-	// TODO: Not needed anymore
-	// JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_nativeSetTouchPos(JNIEnv *env, jobject instance, jint xCoord, jint yCoord);
+	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_nativeOpticalDetection(JNIEnv *env, jobject instance, jlong innerRgba, jlong addrRgba, jfloat fps);
 }// END extern "C"

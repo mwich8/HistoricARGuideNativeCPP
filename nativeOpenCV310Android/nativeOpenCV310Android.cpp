@@ -10,24 +10,17 @@ extern "C" {
 		
 		std::ostringstream rowOstr;
 		rowOstr << " ";
-		__android_log_write(ANDROID_LOG_INFO, "setupDetection22222", rowOstr.str().c_str());
+		__android_log_write(ANDROID_LOG_INFO, "setupDetection3333", rowOstr.str().c_str());
 
 		center = Point((int)innerWidth / 2, (int)innerHeight / 2);
-		// touchedPoint = center;
 
 		// Init searchShapes
 		searchContours.clear();
 		generateSearchContours();
 
+		resetOldMiddleArchProps();
 		updateSettings((int)innerWidth, (int)innerHeight, (int)frameWidth, (int)frameHeight);
 	}
-
-	// TODO: Not needed anymore
-	/*
-	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_updateSettings(JNIEnv *env, jobject instance, jint innerWidth, jint innerHeight) {
-		updateSettings((int)innerWidth, (int)innerHeight);
-	}
-	*/
 
 	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_setSwitchState(JNIEnv *env, jobject instance, jboolean switchState) {
 		if (switchState) {
@@ -48,14 +41,11 @@ extern "C" {
 		resetOldMiddleArchProps();
 	}
 
-	Mat glob_mRgb;
-
 	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_nativeOpticalDetectionDebug(JNIEnv *env, jobject instance, jlong innerRgba, jlong addrRgba, jfloat fps) {
 		Mat& innerRgb = *(Mat*)innerRgba;
-		glob_mRgb = *(Mat*)addrRgba;
+		cameraRgb = *(Mat*)addrRgba;
 
-		// cvtColor(mRgb, originalRGBImg, CV_RGBA2RGB);
-		glob_mRgb.copyTo(originalRGBImg);
+		cameraRgb.copyTo(originalRGBImg);
 
 		Mat mGray;
 		cvtColor(innerRgb, mGray, CV_RGBA2GRAY);
@@ -65,57 +55,25 @@ extern "C" {
 
 		arImgFrames = (int)fps;
 
-		/*
-		std::ostringstream rowOstr;
-		rowOstr << innerRgb.cols;
-		rowOstr << "/";
-		rowOstr << innerRgb.rows;
-		rowOstr << ", RGB SIZE: ";
-		rowOstr << mRgb.cols;
-		rowOstr << "/";j
-		rowOstr << mRgb.rows;
-		__android_log_write(ANDROID_LOG_INFO, "innerRgb SIZE: ", rowOstr.str().c_str());
-		*/
-
 		opticalDetectionDebug(innerRgb, equalizedMat);
-
-		// glob_mRgb = originalRGBImg;
-
-		// TODO: Not needed anymore
-		/*		// Draw touch
-		if (touchedPoint.x != 0 || touchedPoint.y != 0) {
-			circle(innerRgb, touchedPoint, 8, red, -1);
-		}
-		*/
 	}
 
-	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_nativeOpticalDetection(JNIEnv *env, jobject instance, jlong addrRgba, jfloat fps) {
-		Mat& mRgb = *(Mat*)addrRgba;
+	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_nativeOpticalDetection(JNIEnv *env, jobject instance, jlong innerRgba, jlong addrRgba, jfloat fps) {
+		Mat& innerRgb = *(Mat*)innerRgba;
+		cameraRgb = *(Mat*)addrRgba;
+
+		cameraRgb.copyTo(originalRGBImg);
 
 		Mat mGray;
-		cvtColor(mRgb, mGray, CV_RGBA2GRAY);
+		cvtColor(innerRgb, mGray, CV_RGBA2GRAY);
 
 		Mat equalizedMat;
 		equalizeHist(mGray, equalizedMat);
 
 		arImgFrames = (int)fps;
 
-		opticalDetection(mRgb, equalizedMat);
-
-		/*
-		// Draw touch
-		if (touchedPoint.x != 0 || touchedPoint.y != 0) {
-			circle(mRgb, touchedPoint, 8, red, -1);
-		}
-		*/
+		opticalDetection(innerRgb, equalizedMat);
 	}
-
-	// TODO: Not needed anymore
-	/*
-	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_nativeSetTouchPos(JNIEnv *env, jobject instance, jint xCoord, jint yCoord) {
-		touchedPoint = Point((int)xCoord, (int)yCoord);
-	}
-	*/
 } // END extern "C" (maybe combining both externs to one)
 
 void generateSearchContours() {
@@ -187,7 +145,6 @@ void updateSettings(int innerWidth, int innerHeight, int frameWidth, int frameHe
 		rowOstr << innerHeight;
 		__android_log_write(ANDROID_LOG_INFO, "new width", rowOstr.str().c_str());
 		center = Point((int)innerWidth / 2, (int)innerHeight / 2);
-		// touchedPoint = center;
 
 		innerFrameWidth = innerWidth;
 		innerFrameHeight = innerHeight;
@@ -332,14 +289,10 @@ void opticalDetectionDebug(Mat& mRgb, Mat& mGray) {
 
 	bufferSwitch = !bufferSwitch;
 
-	// drawFoundContours(mRgb, prunedContours);
-
 	drawBorder(mRgb);
 }
 
 void opticalDetection(Mat& mRgb, Mat& mGray) {
-	mRgb.copyTo(originalRGBImg);
-
 	Mat mGray2;
 
 	mGray.copyTo(mGray2);
@@ -427,7 +380,6 @@ void mapARImageOnMiddleArch(Mat mRgb, vector<vector<Point>> contours, float midd
 
 	// If middle arch was found, map ARImage on Screen
 	if (!middleArch.empty()) {
-		polylines(mRgb, middleArch, true, blue, 4);
 		mapARImageOnZenithOfMiddleArch(mRgb, middleArch, middleArchDiameter, true);
 	}
 	else if (!old_middle_arch.empty() && remainingContourFrames > 0){
@@ -439,7 +391,7 @@ void mapARImageOnMiddleArch(Mat mRgb, vector<vector<Point>> contours, float midd
 		}
 	}
 	else if (!resizedARImage.empty() && remainingContourFrames > 0){
-		resizedARImage.copyTo(glob_mRgb(old_boundingRec));
+		resizedARImage.copyTo(cameraRgb(old_boundingRec));
 		remainingContourFrames--;
 	}
 	else {
@@ -454,7 +406,7 @@ void mapARImageOnMiddleArch(Mat mRgb, vector<vector<Point>> contours, float midd
 void mapARImageOnZenithOfMiddleArch(Mat mRgb, vector<Point> middleArch, float middleArchDiameter, bool newArchFound) {
 	// Transform Point to destination Mat
 	if (newArchFound) {
-		middleArch = convertContourToOtherMat(mRgb, glob_mRgb, middleArch);
+		middleArch = convertContourToOtherMat(mRgb, cameraRgb, middleArch);
 	}
 	Point zenithOfArch = getZenithOfContour(middleArch);
 	int diameterOfFoundArch = boundingRect(middleArch).width;
@@ -480,17 +432,14 @@ void mapARImageOnZenithOfMiddleArch(Mat mRgb, vector<Point> middleArch, float mi
 	changeAlphaValue(preCroppedImg, backgroundImg, 0.9f);
 	resizedARImage = preCroppedImg;
 	old_boundingRec = boundingRec;
-	resizedARImage.copyTo(glob_mRgb(boundingRec));
+	resizedARImage.copyTo(cameraRgb(boundingRec));
 	old_middle_arch = middleArch;
 	remainingContourFrames = arImgFrames * minSecsToShowARImg;
-	polylines(glob_mRgb, middleArch, true, red, 8);
 }
 
 vector<Point> convertContourToOtherMat(Mat srcMat, Mat dstMat, vector<Point> contour) {
 	Point dstMatCenter = Point(dstMat.cols/2, dstMat.rows/2);
 	Point topLeftOfInnerFrame = Point(dstMatCenter.x - (innerFrameWidth/2), dstMatCenter.y - (innerFrameHeight/2));
-	circle(dstMat, dstMatCenter, 8, blue, -1);
-	circle(dstMat, topLeftOfInnerFrame, 8, green, -1);
 	vector<Point> convertedContour;
 	for (Point p : contour) {
 		Point convertedPoint = Point(p.x + topLeftOfInnerFrame.x, p.y + topLeftOfInnerFrame.y);
@@ -511,27 +460,6 @@ Point getZenithOfContour(vector<Point> contour) {
 }
 
 vector<Point> getAtPointedArch(Mat mRgb, vector<vector<Point>> contours) {
-	// Check if onScreen was tapped
-
-	// TODO: Wird eigentlich im neuen Ansatz nicht mehr benötigt, da alle Konturen im inneren frame in frage kommen
-	/*
-	vector<vector<Point>> contoursPointedAt;
-	if (touchedPoint.x != 0 || touchedPoint.y != 0) {
-		// Get all contours that were hit by the touchedPoint
-		for (vector<Point> contour : contours) {
-			Rect boundingRec = boundingRect(contour);
-			// extend boundingRec to increase detecting area
-			Point topLeft = Point(max(boundingRec.tl().x - 5, 0), max(boundingRec.tl().y - 75, 0));
-			Point bottomRight = Point(min(boundingRec.br().x + 5, innerFrameWidth), min(boundingRec.br().y + 75, innerFrameHeight));
-			boundingRec = Rect(topLeft, bottomRight);
-			if (pointInRect(touchedPoint, boundingRec)) {
-				contoursPointedAt.push_back(contour);
-			}
-		}
-	} else {
-		return vector<Point>();
-	}
-	*/
 	vector<Point> biggestContour;
 	int maxWidth = -1;
 	int widthSum = 0;
@@ -635,7 +563,7 @@ vector<Point> getAtPointedArch(Mat mRgb, vector<vector<Point>> contours) {
 		if (!foundContour.empty()) {
 			int foundContWidth = boundingRect(foundContour).width;
 			// Checks if found contour is similar to previous found arch widths and if found contour isn't very small
-			if (avWidth * 0.9 < foundContWidth && avWidth * 1.1 > foundContWidth && innerFrameWidth * 0.25 < foundContWidth) {
+			if (avWidth * 0.95 < foundContWidth && avWidth * 1.05 > foundContWidth && innerFrameWidth * 0.25 < foundContWidth) {
 				return biggestContour;
 			}
 			else {
@@ -647,7 +575,7 @@ vector<Point> getAtPointedArch(Mat mRgb, vector<vector<Point>> contours) {
 		if (!biggestContour.empty()) {
 			int biggestContWidth = boundingRect(biggestContour).width;
 			// Checks if biggest contour is similar to previous found arch widths and if biggest contour isn't very small
-			if (avWidth * 0.9 < biggestContWidth && avWidth * 1.1 > biggestContWidth && innerFrameWidth * 0.25 < biggestContWidth) {
+			if (avWidth * 0.95 < biggestContWidth && avWidth * 1.05 > biggestContWidth && innerFrameWidth * 0.25 < biggestContWidth) {
 				return biggestContour;
 			}
 			else {
@@ -796,19 +724,14 @@ void drawBorder(Mat mRgb, int borderSize) {
 vector<Point> createArch(int radius, int numOfPointsInSemiCircle, float scaleX, float scaleY, float circleScaleX, bool archExtension) {
 	vector<Point> arch;
 
-	
 	if (archExtension) {
 		// Right extension
 		arch.push_back(Point(center.x + ((radius / 2)*scaleX), center.y + ((radius / 2)*scaleY)));
 		// Left extension
 		arch.push_back(Point(center.x - ((radius / 2)*scaleX), center.y + ((radius / 2)*scaleY)));
 	}	
-
 	if (numOfPointsInSemiCircle > 4) {
 		float degreePerPoint = 180.0f / (numOfPointsInSemiCircle - 1);
-		// std::ostringstream rowOstr2;
-		// rowOstr2 << degreePerPoint;
-		// __android_log_write(ANDROID_LOG_INFO, "degreePerPoint", rowOstr2.str().c_str());
 		for (int i = 0; i < numOfPointsInSemiCircle; i++) {
 			float cosVal = cosf((degreePerPoint * i) * M_PI / 180.0);
 			float invCosVal = cosf((90.0f - (degreePerPoint *i)) * M_PI / 180.0);
@@ -876,8 +799,8 @@ void drawFoundContours(Mat srcDst, vector<vector<Point>> foundContours, int thic
 		} else if (matchShapes(foundContour, searchContours[0], CV_CONTOURS_MATCH_I1, 0) < 0.03) {
 			shapeColor = Scalar(255, 77, 127);
 		}
-		Point zenith = getZenithOfContour(foundContour);
-		circle(srcDst, zenith, 8, red, -1);
+		// Point zenith = getZenithOfContour(foundContour);
+		// circle(srcDst, zenith, 8, red, -1);
 		polylines(srcDst, foundContour, true, shapeColor, thickness);
 		// drawContours(mRgb, mergedContours, i, shapeColor, 2, 8, vector<Vec4i>(), 0, Point());
 	}
@@ -895,7 +818,7 @@ vector<vector<Point>> extractArches(Mat mRgb, vector<vector<Point>> contours) {
 	return extractedContours;
 }
 
-bool contourIsArch(vector<Point> contour, bool drawPoints) {
+bool contourIsArch(vector<Point> contour) {
 	// Find sharp angles
 	int numOfPoints = contour.size();
 	if (numOfPoints < 6) {
@@ -922,15 +845,9 @@ bool contourIsArch(vector<Point> contour, bool drawPoints) {
 		*/
 
 		if (angle > 115) {
-			if (drawPoints) {
-				// circle(mRgb, contour[i], 8, Scalar(0, 247, 255), 2, 8, 0);
-			}
 		}
 		else {
 			// Acute/Sharp Angle
-			if (drawPoints) {
-				// circle(mRgb, contour[i], 8, Scalar(255, 179, 0), 2, 8, 0);
-			}
 			if (leftAcuteAngles > 0) {
 				leftAcuteAngles--;
 				acuteIndices.push_back(i);
@@ -938,7 +855,7 @@ bool contourIsArch(vector<Point> contour, bool drawPoints) {
 			else {
 				return false;
 			}
-			
+
 		}
 	}
 	if (acuteIndices.size() == 2) {
@@ -950,10 +867,10 @@ bool contourIsArch(vector<Point> contour, bool drawPoints) {
 					for (int i = 0; i < contour.size(); i++) {
 						/*
 						if (i == acuteIndices[0] || i == acuteIndices[1]) {
-							circle(mRgb, contour[i], 8, Scalar(255, 179, 0), 2, 8, 0);
+						circle(mRgb, contour[i], 8, Scalar(255, 179, 0), 2, 8, 0);
 						}
 						else {
-							circle(mRgb, contour[i], 8, Scalar(0, 247, 255), 2, 8, 0);
+						circle(mRgb, contour[i], 8, Scalar(0, 247, 255), 2, 8, 0);
 						}
 						*/
 					}
@@ -962,7 +879,8 @@ bool contourIsArch(vector<Point> contour, bool drawPoints) {
 				else {
 					return false;
 				}
-			} else {
+			}
+			else {
 				return false;
 			}
 		}
@@ -974,10 +892,10 @@ bool contourIsArch(vector<Point> contour, bool drawPoints) {
 						for (int i = 0; i < contour.size(); i++) {
 							/*
 							if (i == acuteIndices[0] || i == acuteIndices[1]) {
-								circle(mRgb, contour[i], 8, Scalar(255, 179, 0), 2, 8, 0);
+							circle(mRgb, contour[i], 8, Scalar(255, 179, 0), 2, 8, 0);
 							}
 							else {
-								circle(mRgb, contour[i], 8, Scalar(0, 247, 255), 2, 8, 0);
+							circle(mRgb, contour[i], 8, Scalar(0, 247, 255), 2, 8, 0);
 							}
 							*/
 						}
@@ -1084,18 +1002,10 @@ bool contoursRoughlyAtSamePos(vector<Point> contour1, vector<Point> contour2, fl
 				} 
 				// If the point couldn't be found decrease the counter
 				else if (j == contour2.size()-1) {
-					// std::ostringstream rowOstr11;
-					// rowOstr11 << 0;
-					// __android_log_write(ANDROID_LOG_INFO, "FAIL", rowOstr11.str().c_str());
 					remainingMisses--;
 				}
 			}
 		}
-		/*
-		std::ostringstream rowOstr4;
-		rowOstr4 << remainingMisses;
-		__android_log_write(ANDROID_LOG_INFO, "remainingMisses", rowOstr4.str().c_str());
-		*/
 		if (remainingMisses >= 0) {
 			return true;
 		}
