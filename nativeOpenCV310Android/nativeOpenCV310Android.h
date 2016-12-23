@@ -25,10 +25,14 @@ int remainingContourFrames = 0;
 int minSecsToShowARImg = 2;
 // Number of frames a new mapped historic image will be displayed
 int arImgFrames = 5;
-// Stores the current width of the passed frame
-int frameWidth;
-// Stores the current height of the passed frame
-int frameHeight;
+// Stores the current width of the passed inner frame
+int innerFrameWidth;
+// Stores the current height of the passed inner frame
+int innerFrameHeight;
+// Stores the current width of the passed inner frame
+int cameraFrameWidth;
+// Stores the current height of the passed inner frame
+int cameraFrameHeight;
 // Indicates whether the UI switch is turned on or of, to distinct between "Siegestor" and "Feldherrnhalle"
 bool switchState = false;
 
@@ -94,7 +98,7 @@ Scalar blue = Scalar(0, 0, 255);
 /// Method Declarations
 void generateSearchContours();
 
-void updateSettings(int width, int height);
+void updateSettings(int innerWidth, int innerHeight, int frameWidth, int frameHeight);
 
 void resetOldMiddleArchProps();
 
@@ -106,15 +110,15 @@ void opticalDetectionDebug(Mat& mRgb, Mat& mGray);
 
 void opticalDetection(Mat& mRgb, Mat& mGray);
 
-Rect createRect(Point p1, Point p2, int expandVal = 0);
-
 Point getCenterOfContour(vector<Point> contour);
 
 float getLongestContourSide(vector<Point> contour);
 
 void mapARImageOnMiddleArch(Mat mRgb, vector<vector<Point>> contours, float middleArchDiameter);
 
-void mapARImageOnZenithOfMiddleArch(Mat mRgb, vector<Point> middleArch, float middleArchDiameter);
+void mapARImageOnZenithOfMiddleArch(Mat mRgb, vector<Point> middleArch, float middleArchDiameter, bool newArchFound);
+
+vector<Point> convertContourToOtherMat(Mat srcMat, Mat dstMat, vector<Point> contour);
 
 Point getZenithOfContour(vector<Point> contour);
 
@@ -171,15 +175,17 @@ This means that function names are not the same in C++ as in plain C.
 To inhibit this name mangling, you have to declare functions as extern “C”
 */
 extern "C" {
-	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_setupDetection(JNIEnv *env, jobject instance, jint width, jint height, jlong addrARImg);
+	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_setupDetection(JNIEnv *env, jobject instance, jint innerWidth, jint innerHeight, jint frameWidth, jint frameHeight, jlong addrARImg);
 
-	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_updateSettings(JNIEnv *env, jobject instance, jint width, jint height);
+	// TODO: Not needed anymore
+	// JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_updateSettings(JNIEnv *env, jobject instance, jint innerWidth, jint innerHeight);
 
 	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_setSwitchState(JNIEnv *env, jobject instance, jboolean switchState);
 
-	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_nativeOpticalDetectionDebug(JNIEnv *env, jobject instance, jlong addrRgba, jfloat fps);
+	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_nativeOpticalDetectionDebug(JNIEnv *env, jobject instance, jlong innerRgba, jlong addrRgba, jfloat fps);
 
 	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_nativeOpticalDetection(JNIEnv *env, jobject instance, jlong addrRgba, jfloat fps);
 
-	JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_nativeSetTouchPos(JNIEnv *env, jobject instance, jint xCoord, jint yCoord);
+	// TODO: Not needed anymore
+	// JNIEXPORT void JNICALL Java_com_tum_historicarguide_MainActivity_nativeSetTouchPos(JNIEnv *env, jobject instance, jint xCoord, jint yCoord);
 }// END extern "C"
