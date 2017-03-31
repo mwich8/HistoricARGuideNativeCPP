@@ -10,7 +10,7 @@ extern "C" {
 		
 		std::ostringstream rowOstr;
 		rowOstr << " ";
-		__android_log_write(ANDROID_LOG_INFO, "setupDetection3333", rowOstr.str().c_str());
+		__android_log_write(ANDROID_LOG_INFO, "setupDetection", rowOstr.str().c_str());
 
 		center = Point((int)innerWidth / 2, (int)innerHeight / 2);
 

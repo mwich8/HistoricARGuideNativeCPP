@@ -24,7 +24,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Tegra-Android'">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <AndroidTargetAPI>android-23</AndroidTargetAPI>
+    <AndroidTargetAPI>android-24</AndroidTargetAPI>
     <AndroidMinAPI>android-15</AndroidMinAPI>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Tegra-Android'">
